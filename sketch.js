@@ -25,37 +25,41 @@ function makeCircle(numSides, radius) {
   return points;
 }
 
+function distortPolygon(polygon) {
+  return polygon.map(point => {
+    const x = point[0];
+    const y = point[1];
+    const distance = dist(0.5, 0.5, x, y);
+    
+    const noiseFn = (x, y) => {
+      const noiseX = (x + 0.31) * distance * 2;
+      const noiseY = (y - 1.73) * distance * 2;
+      return noise(noiseX, noiseY, frameCount / 500);
+    };
+        
+    const theta = noiseFn(x, y) * Math.PI * 2;
+    
+    const amountToNudge = 0.1;
+    const newX = x + (amountToNudge * Math.cos(theta));
+    const newY = y + (amountToNudge * Math.sin(theta));
+    
+    return [newX, newY];
+  });
+}
+
 function draw() {
   background(0, 0, 255);
   noFill();
   stroke(0, 0, 0);
   strokeWeight(w(0.001));
 
-  // radius += 0.02;
   for (let radius = 0.05; radius < 0.7; radius += 0.01) {
-    const points = makeCircle(20, radius).map(point => {
-      const x = point[0];
-      const y = point[1];
-      const distance = dist(0.5, 0.5, x, y);
-      
-      const noiseFn = (x, y) => {
-        const noiseX = (x + 0.31) * distance * 2;
-        const noiseY = (y - 1.73) * distance * 2;
-        return noise(x * noiseX * 1.5, y * noiseY * 1.5);
-      };
-      
-      const theta = noiseFn(x, y) * Math.PI * 2;
-      
-      const amountToNudge = 0.01;
-      const newX = x + (amountToNudge * Math.cos(theta));
-      const newY = y + (amountToNudge * Math.sin(theta));
-      
-      return [newX, newY];
-    });
+    const circle = makeCircle(20, radius);
+    const distortedCircle = distortPolygon(circle);
     
     
     beginShape();
-    points.forEach(point => {
+    distortedCircle.forEach(point => {
       vertex(w(point[0]), h(point[1]));
     });
     endShape(CLOSE);
