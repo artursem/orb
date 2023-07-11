@@ -25,6 +25,18 @@ function makeCircle(numSides, radius) {
   return points;
 }
 
+function chaikin(arr, num) {
+  if (num === 0) return arr;
+  const l = arr.length;
+  const smooth = arr.map((c,i) => {
+    return [[0.75*c[0] + 0.25*arr[(i + 1)%l][0],
+             0.75*c[1] + 0.25*arr[(i + 1)%l][1]],
+            [0.25*c[0] + 0.75*arr[(i + 1)%l][0],
+            0.25*c[1] + 0.75*arr[(i + 1)%l][1]]];
+    }).flat();
+  return num === 1 ? smooth : chaikin(smooth, num - 1)
+}
+
 function distortPolygon(polygon) {
   return polygon.map(point => {
     const x = point[0];
@@ -51,18 +63,18 @@ function distortPolygon(polygon) {
 }
 
 function draw() {
-  background(0, 0, 255);
+  background(0, 0, 0);
   noFill();
-  stroke(0, 0, 0);
+  stroke(0, 0, 255);
   strokeWeight(w(0.001));
 
   for (let radius = 0.05; radius < 0.7; radius += 0.01) {
-    const circle = makeCircle(30, radius);
+    const circle = makeCircle(20, radius);
     const distortedCircle = distortPolygon(circle);
-    
+    const smoothCircle = chaikin(distortedCircle, 4);
     
     beginShape();
-    distortedCircle.forEach(point => {
+    smoothCircle.forEach(point => {
       vertex(w(point[0]), h(point[1]));
     });
     endShape(CLOSE);
