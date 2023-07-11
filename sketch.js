@@ -9,7 +9,7 @@ function h(val) {
 }
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(800, 800);
   colorMode(HSB, 360, 100, 100, 1.0);
 }
 
@@ -33,18 +33,26 @@ function draw() {
 
   // radius += 0.02;
   for (let radius = 0.05; radius < 0.7; radius += 0.01) {
-    // const points = makeCircle(20, radius);
     const points = makeCircle(20, radius).map(point => {
       const x = point[0];
       const y = point[1];
-      const theta = noise(x, y) * Math.PI * 2;
+      const distance = dist(0.5, 0.5, x, y);
       
-      const amountToNudge = 0.1;
+      const noiseFn = (x, y) => {
+        const noiseX = (x + 0.31) * distance * 2;
+        const noiseY = (y - 1.73) * distance * 2;
+        return noise(x * noiseX * 1.5, y * noiseY * 1.5);
+      };
+      
+      const theta = noiseFn(x, y) * Math.PI * 2;
+      
+      const amountToNudge = 0.01;
       const newX = x + (amountToNudge * Math.cos(theta));
       const newY = y + (amountToNudge * Math.sin(theta));
       
       return [newX, newY];
     });
+    
     
     beginShape();
     points.forEach(point => {
