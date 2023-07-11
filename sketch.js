@@ -31,15 +31,18 @@ function distortPolygon(polygon) {
     const y = point[1];
     const distance = dist(0.5, 0.5, x, y);
     
+    const z = frameCount / 500;
+    const z2 = frameCount / 200;
+
     const noiseFn = (x, y) => {
-      const noiseX = (x + 0.31) * distance * 2;
-      const noiseY = (y - 1.73) * distance * 2;
-      return noise(noiseX, noiseY, frameCount / 500);
-    };
+      const noiseX = (x + 0.31) * distance * 2 + z2;
+      const noiseY = (y - 1.73) * distance * 2 + z2;
+      return noise(noiseX, noiseY, z);
+    }
         
-    const theta = noiseFn(x, y) * Math.PI * 2;
+    const theta = noiseFn(x, y) * Math.PI * 3;
     
-    const amountToNudge = 0.1;
+    const amountToNudge = 0.08 - (Math.cos(z) * 0.08);
     const newX = x + (amountToNudge * Math.cos(theta));
     const newY = y + (amountToNudge * Math.sin(theta));
     
@@ -54,7 +57,7 @@ function draw() {
   strokeWeight(w(0.001));
 
   for (let radius = 0.05; radius < 0.7; radius += 0.01) {
-    const circle = makeCircle(20, radius);
+    const circle = makeCircle(30, radius);
     const distortedCircle = distortPolygon(circle);
     
     
